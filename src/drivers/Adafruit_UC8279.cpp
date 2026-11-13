@@ -114,7 +114,8 @@ void Adafruit_UC8279::busy_wait(void) {
 
 /**************************************************************************/
 /*!
-    @brief push blank (white) gate rows into the plane currently being written
+    @brief push blank (white) gate rows into the plane currently being written,
+           using _blank_fill as the white byte for the active encoding
     @param count number of gate rows to emit
 */
 /**************************************************************************/
@@ -122,7 +123,7 @@ void Adafruit_UC8279::writeBlankGates(uint16_t count) {
   const uint16_t rowbytes = WIDTH / 8;
   for (uint16_t y = 0; y < count; y++) {
     for (uint16_t i = 0; i < rowbytes; i++) {
-      SPItransfer(0xFF);
+      SPItransfer(_blank_fill);
     }
   }
 }
@@ -261,7 +262,8 @@ void Adafruit_UC8279::setGateGeometry(uint16_t addressedGates,
 /**************************************************************************************/
 /*!
     @brief Sets the controller's scan directions
-    @param mirrorX True to mirror horizontally, False to keep the default orientation.
+    @param mirrorX True to mirror horizontally, False to keep the default
+           orientation.
     @param flipY True to flip vertically, False to keep the default orientation.
 */
 /**************************************************************************************/
