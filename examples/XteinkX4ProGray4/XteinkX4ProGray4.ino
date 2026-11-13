@@ -2,9 +2,8 @@
   4-level grayscale test for the Xteink X4 Pro Pocket eReader (UC8279,
   800x480), running on the device's own ESP32-S3.
 
-  Draws four labeled vertical bars, one per 2-bit plane code, so a single
-  photo shows which code renders as which gray:
-    00 = EPD_WHITE, 01 = EPD_LIGHT, 10 = EPD_DARK, 11 = EPD_BLACK
+  Draws four labeled vertical bars, one per gray level, so a single photo
+  shows all four: EPD_WHITE, EPD_LIGHT, EPD_DARK, EPD_BLACK.
 
   MIT license, all text above must be included in any redistribution
  ****************************************************/
@@ -54,10 +53,10 @@ void setup() {
   display.setTextWrap(false);
 
   display.clearBuffer();
-  drawBar(0, EPD_WHITE, "00 WHITE");
-  drawBar(1, EPD_LIGHT, "01 LIGHT");
-  drawBar(2, EPD_DARK, "10 DARK");
-  drawBar(3, EPD_BLACK, "11 BLACK");
+  drawBar(0, EPD_WHITE, "WHITE");
+  drawBar(1, EPD_LIGHT, "LIGHT");
+  drawBar(2, EPD_DARK, "DARK");
+  drawBar(3, EPD_BLACK, "BLACK");
 
   const uint32_t t0 = millis();
   display.display();

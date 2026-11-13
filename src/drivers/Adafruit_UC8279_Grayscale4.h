@@ -18,15 +18,11 @@
     layer_colors produces this encoding directly; a cleared buffer is white.
 
     Waveform: a four-tone bank (the X3 XTH4 four-grey tables, DC
-    re-balanced, as the Free-Ink SDK builds for absolute grayscale). The
-    panel's stock AA tables are not used: they are overlay waveforms that
-    only work on top of a fresh B/W base.
+    re-balanced, as the Free-Ink SDK builds for absolute grayscale).
 
     Register LUTs only take effect after an OTP refresh in the same power
     session, so update() first runs an OTP refresh on a small window in the
-    unbonded gates (invisible), then the gray refresh. Bench (X4 Pro,
-    LUT_VER 0x68): four distinct levels, about 6 s per display() with BUSY;
-    black is a deep gray, lighter than the monochrome OTP black.
+    unbonded gates (invisible), then the gray refresh.
 */
 /**************************************************************************/
 class Adafruit_UC8279_Grayscale4 : public Adafruit_UC8279 {

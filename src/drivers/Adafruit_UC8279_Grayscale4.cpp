@@ -4,13 +4,11 @@
 
 // clang-format off
 
-// Four-tone waveform: the X3 XTH4 four-grey tables, re-balanced to zero net
-// charge and padded to equal length. Generated from the MIT-licensed Free-Ink
-// SDK's makeQualityBank() (Uc8279X4Driver.cpp) with
-// FREEINK_UC8279X4_GRAY_SPEED 100; the SDK default of 60 left dark and black
-// only a few percent apart on an X4 Pro (LUT_VER 0x68). Rows are in upload
-// order: the source's table 2 goes to 0x23 and table 3 to 0x22 (the SDK's
-// plane-code assignment, confirmed on the bench). Trailing bytes zero.
+// Four-tone waveform from the MIT-licensed Free-Ink SDK's makeQualityBank()
+// (Uc8279X4Driver.cpp) at FREEINK_UC8279X4_GRAY_SPEED 100: the X3 XTH4
+// four-grey tables, rebalanced to zero net charge and padded to equal length.
+// Rows are in upload order: the source's table 2 goes to 0x23 and table 3 to
+// 0x22. Trailing bytes are zero.
 static const uint8_t uc8279_gray_lut_4tone[5][50] = {
     {UC8279_LUT_VCOM,
      0x01, 0x10, 0x06, 0x02, 0x03, 0x01, 0x01,
@@ -121,9 +119,6 @@ void Adafruit_UC8279_Grayscale4::begin(bool reset) {
   // powerUp() pre-fills both planes across the addressed scan; (0,0) is
   // white in this encoding, so the unbonded gates stay white too.
   _blank_fill = 0x00;
-
-  // Inherited from the mono path; not yet wall-clocked on hardware.
-  default_refresh_delay = 5000;
 }
 
 /**************************************************************************/
@@ -133,13 +128,10 @@ void Adafruit_UC8279_Grayscale4::begin(bool reset) {
 /**************************************************************************/
 void Adafruit_UC8279_Grayscale4::update() {
   // Register LUTs only take effect after an OTP (REG=0) refresh in the same
-  // power session (bench: PSR REG=1 + LUTs + PON + DRF straight from reset
-  // shifts the whole panel uniformly and ignores the planes). Stock firmware
-  // always runs a B/W refresh first. Here an OTP refresh of a small window in
-  // the unbonded gates does the same job without touching the visible image.
-  uint8_t v = 0x97;
-  EPD_command(UC8279_VCOM_DATA_INTERVAL, &v, 1);
-  v = _ccset;
+  // power session. An OTP refresh of a small window in the unbonded gates
+  // arms them without touching the visible image.
+  EPD_command(UC8279_VCOM_DATA_INTERVAL, &_cdi, 1);
+  uint8_t v = _ccset;
   EPD_command(UC8279_CCSET, &v, 1);
   v = _tsset;
   EPD_command(UC8279_TSSET, &v, 1);
@@ -174,10 +166,10 @@ void Adafruit_UC8279_Grayscale4::update() {
   psr[0] = _psr0;
   EPD_command(UC8279_PANELSETTING, psr, 2);
   for (uint8_t t = 0; t < 5; t++) {
-    EPD_command(uc8279_gray_lut_4tone[t][0], &uc8279_gray_lut_4tone[t][1], 49);
+    EPD_command(uc8279_gray_lut_4tone[t][0], &uc8279_gray_lut_4tone[t][1],
+                sizeof(uc8279_gray_lut_4tone[t]) - 1);
   }
-  v = 0x97;
-  EPD_command(UC8279_VCOM_DATA_INTERVAL, &v, 1);
+  EPD_command(UC8279_VCOM_DATA_INTERVAL, &_cdi, 1);
   EPD_command(UC8279_PANELSETTING, psr, 2);
 
   EPD_command(UC8279_DISPLAYREFRESH);
